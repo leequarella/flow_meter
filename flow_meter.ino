@@ -1,4 +1,4 @@
-int flowPin = 3;    //This is the input pin on the Arduino
+int flowPin = 2;    //This is the input pin on the Arduino
 
 volatile int pulse = 0;
 int loopCount;
