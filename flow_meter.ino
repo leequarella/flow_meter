@@ -1,38 +1,39 @@
 int flowPin = 3;    //This is the input pin on the Arduino
 
-volatile int totalPulses = 0;
+volatile int pulse = 0;
 int loopCount;
-int oldPulse = 0;
+int totalGallons = 0;
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("");
+  Serial.println("STARTING");
   pinMode(flowPin, INPUT);
 
-  attachInterrupt(digitalPinToInterrupt(flowPin), Flow, CHANGE);  //Configures interrupt 1 (pin 3 on the Arduino Uno) 
+  attachInterrupt(digitalPinToInterrupt(flowPin), Flow, RISING);  //Configures interrupt 1 (pin 3 on the Arduino Uno) 
 }
 
 void loop() {
   if(loopCount > 70){
     loopCount = 0;
     Serial.println(".");
-
   } else {
     loopCount++;
     Serial.print(".");
   }
 
-  if(oldPulse != totalPulses) {
-    int diff = totalPulses - oldPulse;
-    oldPulse = totalPulses;
+  if(totalPulses == 1) {
+    totalPulses = 0;
+    totalGallons++;
     Serial.println("");
-    Serial.println((String)"Pulse from pin" + flowPin + ".");
-    Serial.println((String)"Difference: " + diff);
-    Serial.println((String)"New Total: " + totalPulses);
+    Serial.println((String)"Total Gallons: " + totalGallons);
   }
-  delay (60);
+  interrupts();
+  delay (1000); 
+  noInterrupts();
 }
 
 void Flow()
 {
-  totalPulses++;
+  pulse = 1;
 }
