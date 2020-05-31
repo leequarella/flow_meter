@@ -10,8 +10,6 @@ E |   | C
     D
  */
 
-int segmentPins[7] = {3, 4, 5, 6, 7, 8, 9};
-int digitPins[4] = {10, 11, 12, 13};
 
 int characters[10][7] = {
   { LOW,  LOW,  LOW,  HIGH, LOW,  LOW,  LOW  }, // 0
@@ -26,7 +24,7 @@ int characters[10][7] = {
   { LOW,  LOW,  LOW,  HIGH, HIGH, LOW,  LOW  }  // 9
 };
 
-void setupDisplay() {
+void setupDisplayPins() {
   for (int i = 0; i <= 6; i++) {
     pinMode(segmentPins[i], OUTPUT);
   }

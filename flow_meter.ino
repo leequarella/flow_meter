@@ -1,4 +1,9 @@
-int flowPin = 2;    //This is the input pin on the Arduino
+int flowPin = 2;
+int segmentPins[7] = {3, 4, 5, 6, 7, 8, 9};
+int digitPins[4] = {10, 11, 12, 13};
+int potPin = A0;
+int modeButtonPin = A1;
+int resetButtonPin = A2;
 
 volatile int pulse = 0;
 int loopCount;
@@ -12,19 +17,24 @@ void setup() {
   Serial.println("");
   Serial.println("STARTING");
 
-  setupDisplay();
+  setupDisplayPins();
   pinMode(flowPin, INPUT);
+  pinMode(potPin, INPUT);
+  pinMode(modeButtonPin, INPUT);
+  pinMode(resetButtonPin, INPUT);
 
   attachInterrupt(digitalPinToInterrupt(flowPin), Flow, RISING);  //Configures interrupt 1 (pin 3 on the Arduino Uno) 
 }
 
 void loop() {
-  heartBeat();
+  //heartBeat();
   detectPulse();
   render();
+  setShutoffGallons();
+  checkModeChange();
 
   interrupts();
-  delay (1000);
+  delay (200);
   noInterrupts();
 }
 
@@ -37,11 +47,28 @@ void detectPulse() {
   }
 }
 
-void render(){
+void render() {
   if (currentMode == 1) {
+    Serial.println((String)"1: " + shutoffGallons);
     display(currentMode, shutoffGallons);
   } else {
+    Serial.println((String)"2: " + totalGallons);
     display(currentMode, totalGallons);
+  }
+}
+
+void checkModeChange() {
+  int buttonState = digitalRead(modeButtonPin);
+  if (buttonState == HIGH) {
+    changeMode();
+  }
+}
+
+void changeMode() {
+  if (currentMode == 1) {
+    currentMode = 2;
+  } else {
+    currentMode = 1;
   }
 }
 
@@ -54,6 +81,11 @@ void heartBeat() {
     loopCount++;
     Serial.print(".");
   }
+}
+
+void setShutoffGallons() {
+  int val = analogRead(potPin);
+  shutoffGallons = val;
 }
 
 void Flow()
