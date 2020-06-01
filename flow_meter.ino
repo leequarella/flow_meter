@@ -30,7 +30,7 @@ void setup() {
 
 void loop() {
   //heartBeat();
-  //detectPulse();
+  detectPulse();
   render();
   setShutoffGallons();
   checkModeChange();
@@ -44,8 +44,8 @@ void detectPulse() {
   if(pulseDetected) {
     pulseDetected = false;
     totalGallons++;
-    Serial.println("");
-    Serial.println((String)"Total Gallons: " + totalGallons);
+    //Serial.println("");
+    //Serial.println((String)"Total Gallons: " + totalGallons);
   }
 }
 
