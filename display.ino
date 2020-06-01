@@ -12,16 +12,16 @@ E |   | C
 
 
 int characters[10][7] = {
-  { LOW,  LOW,  LOW,  HIGH, LOW,  LOW,  LOW  }, // 0
-  { HIGH, LOW,  LOW,  HIGH, HIGH, HIGH, HIGH }, // 1
-  { LOW,  LOW,  HIGH, LOW,  LOW,  HIGH, LOW  }, // 2
-  { LOW,  LOW,  LOW,  LOW,  HIGH, HIGH, LOW  }, // 3
-  { HIGH, LOW,  LOW,  HIGH, HIGH, LOW,  LOW  }, // 4
-  { LOW,  HIGH, LOW,  LOW,  HIGH, LOW,  LOW  }, // 5
-  { LOW,  HIGH, LOW,  LOW,  LOW,  LOW,  LOW  }, // 6
-  { LOW,  LOW,  LOW,  HIGH, HIGH, HIGH, HIGH }, // 7
-  { LOW,  LOW,  LOW,  LOW,  LOW,  LOW,  LOW  }, // 8
-  { LOW,  LOW,  LOW,  HIGH, HIGH, LOW,  LOW  }  // 9
+  { HIGH,  HIGH,  HIGH,  HIGH, HIGH,  HIGH,  LOW  }, // 0
+  { LOW, HIGH,  HIGH,  LOW, LOW, LOW, LOW }, // 1
+  { HIGH,  HIGH,  LOW, HIGH,  HIGH,  LOW, HIGH  }, // 2
+  { HIGH,  HIGH,  HIGH,  HIGH,  LOW, LOW, HIGH  }, // 3
+  { LOW, HIGH,  HIGH,  LOW, LOW, HIGH,  HIGH  }, // 4
+  { HIGH,  LOW, HIGH,  HIGH,  LOW, HIGH,  HIGH  }, // 5
+  { HIGH,  LOW, HIGH,  HIGH,  HIGH,  HIGH,  HIGH  }, // 6
+  { HIGH,  HIGH,  HIGH,  LOW, LOW, LOW, LOW }, // 7
+  { HIGH,  HIGH,  HIGH,  HIGH,  HIGH,  HIGH,  HIGH  }, // 8
+  { HIGH,  HIGH,  HIGH,  LOW, LOW, HIGH,  HIGH  }  // 9
 };
 
 void setupDisplayPins() {
@@ -40,23 +40,29 @@ void display(int mode, int phrase) {
   int hundreds = ((phrase/100)%10);
 
   displayDigit(1, mode);
-  delay(1);
-  displayDigit(2, hundreds);
-  delay(1);
+  delay (2);
+  if(hundreds > 0) {
+    displayDigit(2, hundreds);
+    delay (2);
+  }
   displayDigit(3, tens);
-  delay(1);
-  displayDigit(3, ones);
+  delay (2);
+  displayDigit(4, ones);
+  delay (2);
 }
 
 void displayDigit(int digit, int character) {
-  for (int i = 1; i <= 4; i++) {
-    if (i == digit) {
-      digitalWrite(digitPins[digit], HIGH);
+  for (int i = 0; i < 4; i++) {
+    if (i == digit-1) {
+      //Serial.println((String)"  digit: " + digit + "; i: " + i + "; pin: " + digitPins[i] + "; character: " + character + "; on");
+      digitalWrite(digitPins[i], LOW);
+      displayCharacter(character);
     } else {
-      digitalWrite(digitPins[digit], LOW);
+      //Serial.println((String)"  digit: " + digit + "; i: " + i + "; pin: " + digitPins[i] + "; off");
+      digitalWrite(digitPins[i], HIGH);
     }
-    displayCharacter(character);
   }
+  //Serial.println("");
 }
 
 void displayCharacter(int character) {

@@ -1,6 +1,8 @@
 int flowPin = 2;
-int segmentPins[7] = {3, 4, 5, 6, 7, 8, 9};
-int digitPins[4] = {10, 11, 12, 13};
+//int segmentPins[7] = {3, 4, 5, 6, 7, 8, 9};
+//int digitPins[4] = {10, 11, 12, 13};
+int segmentPins[7] = {4, 8, 12, 10, 9, 5, 13};
+int digitPins[4] = {A5, 6, 7, 3};
 int potPin = A0;
 int modeButtonPin = A1;
 int resetButtonPin = A2;
@@ -28,14 +30,14 @@ void setup() {
 
 void loop() {
   //heartBeat();
-  detectPulse();
+  //detectPulse();
   render();
   setShutoffGallons();
   checkModeChange();
 
-  interrupts();
-  delay (200);
-  noInterrupts();
+  //interrupts();
+  delay (7);
+  //noInterrupts();
 }
 
 void detectPulse() {
@@ -49,10 +51,10 @@ void detectPulse() {
 
 void render() {
   if (currentMode == 1) {
-    Serial.println((String)"1: " + shutoffGallons);
+    //Serial.println((String)"1: " + shutoffGallons);
     display(currentMode, shutoffGallons);
   } else {
-    Serial.println((String)"2: " + totalGallons);
+    //Serial.println((String)"2: " + totalGallons);
     display(currentMode, totalGallons);
   }
 }
@@ -85,7 +87,7 @@ void heartBeat() {
 
 void setShutoffGallons() {
   int val = analogRead(potPin);
-  shutoffGallons = val;
+  shutoffGallons = val/3;
 }
 
 void Flow()
