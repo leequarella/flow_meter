@@ -14,6 +14,10 @@ int currentMode = 1;
 int shutoffGallons = 50;
 bool pulseDetected = false;
 
+//button debouncing
+unsigned long lastModeChangeTime = 0;
+unsigned long debounceDelay = 500;
+
 void setup() {
   Serial.begin(9600);
   Serial.println("");
@@ -32,7 +36,7 @@ void loop() {
   //heartBeat();
   detectPulse();
   render();
-  setShutoffGallons();
+  //setShutoffGallons();
   checkModeChange();
 
   //interrupts();
@@ -60,9 +64,12 @@ void render() {
 }
 
 void checkModeChange() {
-  int buttonState = digitalRead(modeButtonPin);
-  if (buttonState == HIGH) {
-    changeMode();
+  if ((millis() - lastModeChangeTime) > debounceDelay) {
+    int buttonState = digitalRead(modeButtonPin);
+    if (buttonState == HIGH) {
+      lastModeChangeTime = millis();
+      changeMode();
+    }
   }
 }
 
