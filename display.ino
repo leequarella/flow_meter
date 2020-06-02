@@ -40,29 +40,26 @@ void display(int mode, int phrase) {
   int hundreds = ((phrase/100)%10);
 
   displayDigit(1, mode);
-  delay (2);
+  delay (1);
   if(hundreds > 0) {
     displayDigit(2, hundreds);
-    delay (2);
+    delay (1);
   }
   displayDigit(3, tens);
-  delay (2);
+  delay (1);
   displayDigit(4, ones);
-  delay (2);
+  delay (1);
 }
 
 void displayDigit(int digit, int character) {
   for (int i = 0; i < 4; i++) {
     if (i == digit-1) {
-      //Serial.println((String)"  digit: " + digit + "; i: " + i + "; pin: " + digitPins[i] + "; character: " + character + "; on");
       digitalWrite(digitPins[i], LOW);
       displayCharacter(character);
     } else {
-      //Serial.println((String)"  digit: " + digit + "; i: " + i + "; pin: " + digitPins[i] + "; off");
       digitalWrite(digitPins[i], HIGH);
     }
   }
-  //Serial.println("");
 }
 
 void displayCharacter(int character) {

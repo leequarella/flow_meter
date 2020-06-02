@@ -1,11 +1,10 @@
 int flowPin = 2;
-//int segmentPins[7] = {3, 4, 5, 6, 7, 8, 9};
-//int digitPins[4] = {10, 11, 12, 13};
 int segmentPins[7] = {4, 8, 12, 10, 9, 5, 13};
 int digitPins[4] = {A5, 6, 7, 3};
-int potPin = A0;
-int modeButtonPin = A1;
-int resetButtonPin = A2;
+int modeButtonPin = A0;
+int hundredsButton = A1;
+int tensButton = A2;
+int onesButton = A3;
 
 volatile int pulse = 0;
 int loopCount;
@@ -16,27 +15,26 @@ bool pulseDetected = false;
 
 //button debouncing
 unsigned long lastModeChangeTime = 0;
-unsigned long debounceDelay = 500;
+unsigned long debounceModeChangeDelay = 500;
+unsigned long debounceGallonsChangeDelay = 200;
+unsigned long lastGallonsChangeTime = 0;
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("");
-  Serial.println("STARTING");
-
   setupDisplayPins();
+
   pinMode(flowPin, INPUT);
-  pinMode(potPin, INPUT);
+  pinMode(hundredsButton, INPUT);
+  pinMode(tensButton, INPUT);
+  pinMode(onesButton, INPUT);
   pinMode(modeButtonPin, INPUT);
-  pinMode(resetButtonPin, INPUT);
 
   attachInterrupt(digitalPinToInterrupt(flowPin), Flow, RISING);  //Configures interrupt 1 (pin 3 on the Arduino Uno) 
 }
 
 void loop() {
-  //heartBeat();
   detectPulse();
   render();
-  //setShutoffGallons();
+  pollGallonButtons();
   checkModeChange();
 
   //interrupts();
@@ -48,23 +46,19 @@ void detectPulse() {
   if(pulseDetected) {
     pulseDetected = false;
     totalGallons++;
-    //Serial.println("");
-    //Serial.println((String)"Total Gallons: " + totalGallons);
   }
 }
 
 void render() {
   if (currentMode == 1) {
-    //Serial.println((String)"1: " + shutoffGallons);
     display(currentMode, shutoffGallons);
   } else {
-    //Serial.println((String)"2: " + totalGallons);
     display(currentMode, totalGallons);
   }
 }
 
 void checkModeChange() {
-  if ((millis() - lastModeChangeTime) > debounceDelay) {
+  if ((millis() - lastModeChangeTime) > debounceModeChangeDelay) {
     int buttonState = digitalRead(modeButtonPin);
     if (buttonState == HIGH) {
       lastModeChangeTime = millis();
@@ -81,20 +75,24 @@ void changeMode() {
   }
 }
 
-void heartBeat() {
-  if(loopCount > 70){
-    loopCount = 0;
-    Serial.println(".");
+void pollGallonButtons() {
+  if((millis() - lastGallonsChangeTime) > debounceGallonsChangeDelay) {
 
-  } else {
-    loopCount++;
-    Serial.print(".");
+    if(digitalRead(hundredsButton) == HIGH){
+      shutoffGallons += 100;
+      lastGallonsChangeTime = millis();
+    } else if ( digitalRead(tensButton) == HIGH ) {
+      shutoffGallons += 10;
+      lastGallonsChangeTime = millis();
+    } else if ( digitalRead(onesButton) == HIGH ) {
+      shutoffGallons += 1;
+      lastGallonsChangeTime = millis();
+    }
+
+    if (shutoffGallons > 999) {
+      shutoffGallons = 0;
+    }
   }
-}
-
-void setShutoffGallons() {
-  int val = analogRead(potPin);
-  shutoffGallons = val/3;
 }
 
 void Flow()
