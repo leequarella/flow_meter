@@ -1,17 +1,17 @@
-int flowPin = 2;
 int segmentPins[7] = {4, 8, 12, 10, 9, 5, 13};
 int digitPins[4] = {A5, 6, 7, 3};
+int flowPin = 2;
+int valvePin = A4;
 int modeButtonPin = A0;
 int hundredsButton = A1;
 int tensButton = A2;
 int onesButton = A3;
 
-volatile int pulse = 0;
 int loopCount;
 int totalGallons = 0;
 int currentMode = 1;
 int shutoffGallons = 50;
-bool pulseDetected = false;
+volatile bool flowPulseDetected = false;
 
 //button debouncing
 unsigned long lastModeChangeTime = 0;
@@ -36,6 +36,7 @@ void loop() {
   render();
   pollGallonButtons();
   checkModeChange();
+  setValve();
 
   //interrupts();
   delay (7);
@@ -43,8 +44,8 @@ void loop() {
 }
 
 void detectPulse() {
-  if(pulseDetected) {
-    pulseDetected = false;
+  if(flowPulseDetected) {
+    flowPulseDetected = false;
     totalGallons++;
   }
 }
@@ -95,7 +96,15 @@ void pollGallonButtons() {
   }
 }
 
+void setValve(){
+  if( totalGallons >= shutoffGallons ) {
+    digitalWrite(valvePin, LOW);
+  } else {
+    digitalWrite(valvePin, HIGH);
+  }
+}
+
 void Flow()
 {
-  pulseDetected = true;
+  flowPulseDetected = true;
 }
